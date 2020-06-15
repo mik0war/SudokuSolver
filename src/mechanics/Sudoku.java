@@ -47,6 +47,31 @@ public class Sudoku {
                     }
     }
 
+    public void onlyImToNumber(){
+        for (int y = 0; y < 9; y++)
+            for (int x = 0; x < 9; x++){
+                if (cells[x][y].countOfImNumbers() == 1)
+                    for (int num = 1; num < 10; num++)
+                        if (num == cells[x][y].getImNumber()[num-1]) {
+                            cells[x][y].setNumber(num);
+                            cells[x][y].setImNumber(num, true);
+                            validateImToNumber(num, x, y);
+                        }
+            }
+    }
+
+    public void validateImToNumber(int num, int secondX, int secondY){
+        for (int y = 0; y < 9; y++)
+            for (int x = 0; x < 9; x++){
+                if (cells[x][y].getNumber() == 0)
+                    if (num == cells[x][y].getImNumber()[num-1] &&
+                        ((y == secondY) || (x == secondX) ||
+                                (cells[x][y].getSquare() == cells[secondX][secondY].getSquare())))
+                        cells[x][y].setImNumber(num, true);
+            }
+
+    }
+
     @Override
     public String toString() {
         String sudoku = "";
