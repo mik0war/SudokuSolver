@@ -3,14 +3,10 @@ package mechanics;
 public class Sudoku_cell {
     private int number;
     private int[] imNumber = new int[9];
-    private int positionX;
-    private int positionY;
     private int square;
 
-    public Sudoku_cell(int number, int positionX, int positionY, int square) {
+    public Sudoku_cell(int number, int square) {
         this.number = number;
-        this.positionX = positionX;
-        this.positionY = positionY;
         this.square = square;
     }
 
@@ -31,14 +27,6 @@ public class Sudoku_cell {
             this.imNumber[imNumber - 1] = imNumber;
         else
             this.imNumber[imNumber - 1] = 0;
-    }
-
-    public int getPositionX() {
-        return positionX;
-    }
-
-    public int getPositionY() {
-        return positionY;
     }
 
     public int getSquare() {

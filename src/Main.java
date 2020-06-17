@@ -101,11 +101,9 @@ public class Main {
         s1.insertImNumber(4, 0, 0, false);
         s1.insertImNumber(4, 0, 1, false);
 
-        while (s1.onlyImToNumber());
+        s1.solve();
+
         System.out.println(s1);
-        System.out.println(s1.showImNumbers(1, 0));
-        System.out.println(s1.showImNumbers(6, 1));
-        System.out.println(s1.showImNumbers(1, 1));
-        System.out.println(s1.showImNumbers(0, 0));
+
     }
 }
