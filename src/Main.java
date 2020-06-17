@@ -6,7 +6,7 @@ public class Main {
         Sudoku s1 = new Sudoku();
 
         /* TestCase 1
-        s1.insertNumber(8,0,0);
+        s1.insertNumber(8, 0, 0);
         s1.insertNumber(2, 2, 0);
         s1.insertNumber(5, 8, 0);
         s1.insertNumber(4, 2, 1);
@@ -95,14 +95,17 @@ public class Main {
         System.out.println("56. "+s1.showImNumbers(8, 8));
         */
 
-        s1.insertImNumber(1, 1, 1, false);
-        s1.insertImNumber(2, 1, 1, false);
-        s1.insertImNumber(3, 1, 1, false);
-        s1.insertImNumber(7, 0, 0, false);
-        s1.insertImNumber(1, 1, 0, false);
-        s1.onlyImToNumber();
-        System.out.println(s1);
-        System.out.println(s1.showImNumbers(1, 1));
+        s1.insertImNumber(5, 1, 0, false);
+        s1.insertImNumber(6, 0, 1, false);
+        s1.insertImNumber(6, 1, 1, false);
+        s1.insertImNumber(4, 0, 0, false);
+        s1.insertImNumber(4, 0, 1, false);
 
+        while (s1.onlyImToNumber());
+        System.out.println(s1);
+        System.out.println(s1.showImNumbers(1, 0));
+        System.out.println(s1.showImNumbers(6, 1));
+        System.out.println(s1.showImNumbers(1, 1));
+        System.out.println(s1.showImNumbers(0, 0));
     }
 }
