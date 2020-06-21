@@ -25,11 +25,29 @@ public class Sudoku {
         cells[posX][posY].setImNumber(num, isRemove);
     }
 
+    private void setNumber(int num, int x, int y){
+        cells[x][y].setNumber(num);
+        validateImToNumber(num, x, y);
+    }
+
+    private void validateImToNumber(int num, int secondX, int secondY){
+        for (int y = 0; y < 9; y++)
+            for (int x = 0; x < 9; x++){
+                if (cells[x][y].getNumber() == 0)
+                    if (num == cells[x][y].getImNumber()[num-1] &&
+                            ((y == secondY) || (x == secondX) ||
+                                    (cells[x][y].getSquare() == cells[secondX][secondY].getSquare()))) {
+                        cells[x][y].setImNumber(num, true);
+                    }
+
+            }
+    }
+
     public String showImNumbers(){
         String result = "";
         for (int y = 0; y < 9; y++)
             for (int x = 0; x < 9; x++)
-                if (cells[x][y].getNumber() == 0)
+                if (cells[x][y].getNumber() == 0 && cells[x][y].countOfImNumbers() != 0)
                     result += cells[x][y].showImNumber() + "imaginary num at ( " + (x+1) + "; " + (y+1) + " )" + '\n';
         return result;
     }
@@ -38,7 +56,7 @@ public class Sudoku {
         return cells[posX][posY].showImNumber() + "imaginary num at ( " + (posX+1) + "; " + (posY+1) + " )";
     }
 
-    public void fillImNumbers() {
+    private void fillImNumbers() {
         for (int y = 0; y < 9; y++)
             for (int x = 0; x < 9; x++)
                 if (cells[x][y].getNumber() == 0)
@@ -92,9 +110,8 @@ public class Sudoku {
                                             isPrintColumn = false;
                                 }
                             if (isPrintSquare || isPrintLine || isPrintColumn) {
-                                cells[x][y].setNumber(num);
-                                cells[x][y].setImNumber(num, true);
                                 isWorks = true;
+                                this.setNumber(num, x, y);
                                 validateImToNumber(num, x, y);
                             }
                         }
@@ -103,19 +120,114 @@ public class Sudoku {
         return isWorks;
     }
 
-    private void validateImToNumber(int num, int secondX, int secondY){
-        for (int y = 0; y < 9; y++)
-            for (int x = 0; x < 9; x++){
-                if (cells[x][y].getNumber() == 0)
-                    if (num == cells[x][y].getImNumber()[num-1] &&
-                        ((y == secondY) || (x == secondX) ||
-                                (cells[x][y].getSquare() == cells[secondX][secondY].getSquare()))) {
-                        cells[x][y].setImNumber(num, true);
+    private boolean reductionImNumbersLineCol(){
+        boolean isWorks = false;
+        for (int num = 1; num < 10; num++)
+            for (int y_x = 0; y_x < 9; y_x++)
+            {
+                boolean isClearSquareLine = false;
+                boolean isEnterLine = true;
+                boolean isClearSquareColumn = false;
+                boolean isEnterColumn = true;
+                int squareLine = -1;
+                int squareColumn = -1;
+
+                for (int x_y = 0; x_y < 9; x_y++) {
+                    if (cells[x_y][y_x].getImNumber()[num - 1] != 0 && isEnterLine) {
+
+                        if (squareLine == -1) {
+                            squareLine = cells[x_y][y_x].getSquare();
+                            isClearSquareLine = true;
+                        }
+
+                        if (cells[x_y][y_x].getSquare() != squareLine) {
+                            isClearSquareLine = false;
+                            isEnterLine = false;
+                        }
                     }
 
+                    if (cells[y_x][x_y].getImNumber()[num - 1] != 0 && isEnterColumn) {
+
+                        if (squareColumn == -1) {
+                            squareColumn = cells[y_x][x_y].getSquare();
+                            isClearSquareColumn = true;
+                        }
+
+                        if (cells[y_x][x_y].getSquare() != squareColumn) {
+                            isClearSquareColumn = false;
+                            isEnterColumn = false;
+                        }
+                    }
+                }
+
+                if (isClearSquareLine || isClearSquareColumn){
+                    for (int y = 0; y < 9; y++) {
+                        if (y != y_x)
+                            for (int x = 0; x < 9; x++){
+                                if (isClearSquareLine && cells[x][y].getImNumber()[num-1] == num && cells[x][y].getSquare() == squareLine) {
+                                    cells[x][y].setImNumber(num, true);
+                                    isWorks = true;
+                                }
+
+                                if (isClearSquareColumn && cells[y][x].getImNumber()[num-1] == num && cells[y][x].getSquare() == squareColumn) {
+                                    cells[y][x].setImNumber(num, true);
+                                    isWorks = true;
+                                }
+                            }
+                    }
+                }
+
             }
+        return isWorks;
     }
 
+    private boolean guidingImNumbers() {
+        boolean isWorks = false;
+        for (int num = 1; num < 10; num++)
+            for (int square = 0; square < 9; square++) {
+                int y_potential = -1;
+                boolean isLine = false;
+                int x_potential = -1;
+                boolean isColumn = false;
+
+                for (int y = 0; y < 9; y++)
+                    for (int x = 0; x < 9; x++) {
+                        if (cells[x][y].getSquare() == square && cells[x][y].getImNumber()[num-1] == num){
+                            if (y_potential == -1) {
+                                isLine = true;
+                                y_potential = y;
+                            }
+                            if (y_potential != y)
+                                isLine = false;
+                        }
+
+                        if (cells[y][x].getSquare() == square && cells[y][x].getImNumber()[num-1] == num){
+                            if (x_potential == -1) {
+                                isColumn = true;
+                                x_potential = y;
+                            }
+                            if (x_potential != y)
+                                isColumn = false;
+                        }
+                    }
+
+                if (isLine || isColumn) {
+                    for (int cord = 0; cord < 9; cord++){
+                        if (isLine && cells[cord][y_potential].getSquare() != square)
+                            cells[cord][y_potential].setImNumber(num, true);
+
+                        if (isColumn && cells[x_potential][cord].getSquare() != square)
+                            cells[x_potential][cord].setImNumber(num, true);
+                    }
+
+                }
+
+
+            }
+        return isWorks;
+    }
+
+    //TODO
     public void solve(){
         this.fillImNumbers();
         while (this.onlyImToNumber());

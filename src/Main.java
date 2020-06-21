@@ -95,15 +95,23 @@ public class Main {
         System.out.println("56. "+s1.showImNumbers(8, 8));
         */
 
-        s1.insertImNumber(5, 1, 0, false);
-        s1.insertImNumber(6, 0, 1, false);
-        s1.insertImNumber(6, 1, 1, false);
+        //s1.insertImNumber(5, 1, 0, false);
+        //s1.insertImNumber(6, 0, 1, false);
+        //s1.insertImNumber(6, 1, 1, false);
         s1.insertImNumber(4, 0, 0, false);
-        s1.insertImNumber(4, 0, 1, false);
+        //s1.insertImNumber(4, 0, 1, false);
+        //s1.insertImNumber(4, 1,1, false);
+        s1.insertImNumber(4, 1, 0, false);
+        s1.insertImNumber(4, 6, 0, false);
+        s1.insertImNumber(4, 6, 1, false);
+        s1.insertImNumber(4, 0, 5, false);
+        s1.insertImNumber(4, 1, 5, false);
 
-        s1.solve();
+
+        s1.onlyImToNumber();
 
         System.out.println(s1);
+        System.out.println(s1.showImNumbers());
 
     }
 }

@@ -16,14 +16,16 @@ public class Sudoku_cell {
 
     public void setNumber(int number) {
         this.number = number;
+        for(int i = 0; i < 9; i++)
+            this.imNumber[i] = 0;
     }
 
     public int[] getImNumber() {
         return imNumber;
     }
 
-    public void setImNumber(int imNumber, boolean flag) {
-        if (!flag)
+    public void setImNumber(int imNumber, boolean isRemove) {
+        if (!isRemove)
             this.imNumber[imNumber - 1] = imNumber;
         else
             this.imNumber[imNumber - 1] = 0;
