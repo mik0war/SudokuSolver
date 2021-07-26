@@ -1,14 +1,19 @@
 package mechanics;
 
-public class Sudoku {
-    private Sudoku_cell[][] cells = new Sudoku_cell[9][9];
+import mechanics.errors.NotInImageNumbers;
+import mechanics.utils.Utils;
 
-    public Sudoku() {
+public class Sudoku {
+
+    private int size = 9;
+    private SudokuCell[][] cells = new SudokuCell[9][9];
+
+    public Sudoku(int size) {
         int squareY = 0;
         for (int y = 0; y < 9; y++) {
             int squareX = 0;
             for (int x = 0; x < 9; x++) {
-                this.cells[x][y] = new Sudoku_cell( 0, squareX + squareY*3);
+                this.cells[x][y] = new SudokuCell( 0, squareX + squareY*3);
                 if (x == 2 || x == 5)
                     squareX++;
             }
@@ -18,15 +23,27 @@ public class Sudoku {
     }
 
     public void insertNumber(int num, int posX, int posY){
-        cells[posX][posY].setNumber(num);
+        try {
+            cells[posX][posY].setNumber(num);
+        }
+        catch (NotInImageNumbers error){
+            Utils.logMassage(error.toString());
+        };
     }
 
     public void insertImNumber(int num, int posX, int posY, boolean isRemove){
-        cells[posX][posY].setImNumber(num, isRemove);
+        cells[posX][posY].setImNumber(num);
     }
 
     private void setNumber(int num, int x, int y){
-        cells[x][y].setNumber(num);
+
+        try {
+            cells[x][y].setNumber(num);
+        }
+        catch (NotInImageNumbers error){
+            Utils.logMassage(error.toString());
+        }
+
         validateImToNumber(num, x, y);
     }
 
@@ -34,10 +51,10 @@ public class Sudoku {
         for (int y = 0; y < 9; y++)
             for (int x = 0; x < 9; x++){
                 if (cells[x][y].getNumber() == 0)
-                    if (num == cells[x][y].getImNumber()[num-1] &&
+                    if (cells[x][y].getImNumbers()[num-1] &&
                             ((y == secondY) || (x == secondX) ||
                                     (cells[x][y].getSquare() == cells[secondX][secondY].getSquare()))) {
-                        cells[x][y].setImNumber(num, true);
+                        cells[x][y].removeImNumber(num);
                     }
 
             }
@@ -70,7 +87,7 @@ public class Sudoku {
                                                     (cells[x][y].getSquare() == cells[secondX][secondY].getSquare())))
                                         isPrint = false;
                         if (isPrint)
-                            cells[x][y].setImNumber(number, false);
+                            cells[x][y].setImNumber(number);
                     }
     }
 
@@ -80,15 +97,19 @@ public class Sudoku {
             for (int x = 0; x < 9; x++){
                 if (cells[x][y].countOfImNumbers() == 1)
                     for (int num = 1; num < 10; num++)
-                        if (num == cells[x][y].getImNumber()[num-1]) {
-                            cells[x][y].setNumber(num);
-                            cells[x][y].setImNumber(num, true);
+                        if (cells[x][y].getImNumbers()[num-1]) {
+                            try {
+                                cells[x][y].setNumber(num);
+                            }
+                            catch (NotInImageNumbers error){
+                                Utils.logMassage(error.toString());
+                            }
                             isWorks = true;
                             validateImToNumber(num, x, y);
                         }
                 if (cells[x][y].getNumber() == 0)
                     for (int num = 1; num < 10; num++) {
-                        if (cells[x][y].getImNumber()[num-1] == num) {
+                        if (cells[x][y].getImNumbers()[num-1]) {
                             boolean isPrintLine = true;
                             boolean isPrintColumn = true;
                             boolean isPrintSquare = true;
@@ -96,17 +117,17 @@ public class Sudoku {
                                 for (int secondY = 0; secondY < 9; secondY++) {
 
                                     if (cells[secondX][secondY].getNumber() == 0)
-                                        if (cells[secondX][secondY].getImNumber()[num - 1] != 0 &&
+                                        if (cells[secondX][secondY].getImNumbers()[num - 1] &&
                                                 cells[x][y].getSquare() == cells[secondX][secondY].getSquare() &&
                                                 (x != secondX || y != secondY))
                                             isPrintSquare = false;
 
                                     if (cells[secondX][y].getNumber() == 0)
-                                        if (cells[secondX][y].getImNumber()[num - 1] != 0 && x != secondX)
+                                        if (cells[secondX][y].getImNumbers()[num - 1] && x != secondX)
                                             isPrintLine = false;
 
                                     if (cells[x][secondY].getNumber() == 0)
-                                        if (cells[x][secondY].getImNumber()[num - 1] != 0 && y != secondY)
+                                        if (cells[x][secondY].getImNumbers()[num - 1]&& y != secondY)
                                             isPrintColumn = false;
                                 }
                             if (isPrintSquare || isPrintLine || isPrintColumn) {
@@ -133,7 +154,7 @@ public class Sudoku {
                 int squareColumn = -1;
 
                 for (int x_y = 0; x_y < 9; x_y++) {
-                    if (cells[x_y][y_x].getImNumber()[num - 1] != 0 && isEnterLine) {
+                    if (cells[x_y][y_x].getImNumbers()[num - 1] && isEnterLine) {
 
                         if (squareLine == -1) {
                             squareLine = cells[x_y][y_x].getSquare();
@@ -146,7 +167,7 @@ public class Sudoku {
                         }
                     }
 
-                    if (cells[y_x][x_y].getImNumber()[num - 1] != 0 && isEnterColumn) {
+                    if (cells[y_x][x_y].getImNumbers()[num - 1] && isEnterColumn) {
 
                         if (squareColumn == -1) {
                             squareColumn = cells[y_x][x_y].getSquare();
@@ -164,13 +185,13 @@ public class Sudoku {
                     for (int y = 0; y < 9; y++) {
                         if (y != y_x)
                             for (int x = 0; x < 9; x++){
-                                if (isClearSquareLine && cells[x][y].getImNumber()[num-1] == num && cells[x][y].getSquare() == squareLine) {
-                                    cells[x][y].setImNumber(num, true);
+                                if (isClearSquareLine && cells[x][y].getImNumbers()[num-1] && cells[x][y].getSquare() == squareLine) {
+                                    cells[x][y].removeImNumber(num);
                                     isWorks = true;
                                 }
 
-                                if (isClearSquareColumn && cells[y][x].getImNumber()[num-1] == num && cells[y][x].getSquare() == squareColumn) {
-                                    cells[y][x].setImNumber(num, true);
+                                if (isClearSquareColumn && cells[y][x].getImNumbers()[num-1] && cells[y][x].getSquare() == squareColumn) {
+                                    cells[y][x].removeImNumber(num);
                                     isWorks = true;
                                 }
                             }
@@ -192,7 +213,7 @@ public class Sudoku {
 
                 for (int y = 0; y < 9; y++)
                     for (int x = 0; x < 9; x++) {
-                        if (cells[x][y].getSquare() == square && cells[x][y].getImNumber()[num-1] == num){
+                        if (cells[x][y].getSquare() == square && cells[x][y].getImNumbers()[num-1]){
                             if (y_potential == -1) {
                                 isLine = true;
                                 y_potential = y;
@@ -201,7 +222,7 @@ public class Sudoku {
                                 isLine = false;
                         }
 
-                        if (cells[y][x].getSquare() == square && cells[y][x].getImNumber()[num-1] == num){
+                        if (cells[y][x].getSquare() == square && cells[y][x].getImNumbers()[num-1]){
                             if (x_potential == -1) {
                                 isColumn = true;
                                 x_potential = y;
@@ -214,10 +235,10 @@ public class Sudoku {
                 if (isLine || isColumn) {
                     for (int cord = 0; cord < 9; cord++){
                         if (isLine && cells[cord][y_potential].getSquare() != square)
-                            cells[cord][y_potential].setImNumber(num, true);
+                            cells[cord][y_potential].removeImNumber(num);
 
                         if (isColumn && cells[x_potential][cord].getSquare() != square)
-                            cells[x_potential][cord].setImNumber(num, true);
+                            cells[x_potential][cord].removeImNumber(num);
                     }
 
                 }
