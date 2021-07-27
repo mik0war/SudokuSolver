@@ -6,7 +6,7 @@ import mechanics.utils.Utils;
 public class Sudoku {
 
     private int size = 9;
-    private SudokuCell[][] cells = new SudokuCell[9][9];
+    private SudokuCell[][] cells = new SudokuCell[size][size];
 
     public Sudoku(int size) {
         int squareY = 0;
@@ -20,31 +20,6 @@ public class Sudoku {
             if (y == 2 || y == 5)
                 squareY++;
         }
-    }
-
-    public void insertNumber(int num, int posX, int posY){
-        try {
-            cells[posX][posY].setNumber(num);
-        }
-        catch (NotInImageNumbers error){
-            Utils.logMassage(error.toString());
-        };
-    }
-
-    public void insertImNumber(int num, int posX, int posY, boolean isRemove){
-        cells[posX][posY].setImNumber(num);
-    }
-
-    private void setNumber(int num, int x, int y){
-
-        try {
-            cells[x][y].setNumber(num);
-        }
-        catch (NotInImageNumbers error){
-            Utils.logMassage(error.toString());
-        }
-
-        validateImToNumber(num, x, y);
     }
 
     private void validateImToNumber(int num, int secondX, int secondY){
@@ -65,12 +40,12 @@ public class Sudoku {
         for (int y = 0; y < 9; y++)
             for (int x = 0; x < 9; x++)
                 if (cells[x][y].getNumber() == 0 && cells[x][y].countOfImNumbers() != 0)
-                    result += cells[x][y].showImNumber() + "imaginary num at ( " + (x+1) + "; " + (y+1) + " )" + '\n';
+                    result += cells[x][y].ImNumbersToString() + "imaginary num at ( " + (x+1) + "; " + (y+1) + " )" + '\n';
         return result;
     }
 
     public String showImNumbers(int posX, int posY){
-        return cells[posX][posY].showImNumber() + "imaginary num at ( " + (posX+1) + "; " + (posY+1) + " )";
+        return cells[posX][posY].ImNumbersToString() + "imaginary num at ( " + (posX+1) + "; " + (posY+1) + " )";
     }
 
     private void fillImNumbers() {
@@ -91,7 +66,7 @@ public class Sudoku {
                     }
     }
 
-    public boolean onlyImToNumber(){
+    public boolean onlyImToNumber() throws NotInImageNumbers {
         boolean isWorks = false;
         for (int y = 0; y < 9; y++)
             for (int x = 0; x < 9; x++){
@@ -102,7 +77,7 @@ public class Sudoku {
                                 cells[x][y].setNumber(num);
                             }
                             catch (NotInImageNumbers error){
-                                Utils.logMassage(error.toString());
+                                Utils.logMessage(error.toString());
                             }
                             isWorks = true;
                             validateImToNumber(num, x, y);
@@ -132,7 +107,7 @@ public class Sudoku {
                                 }
                             if (isPrintSquare || isPrintLine || isPrintColumn) {
                                 isWorks = true;
-                                this.setNumber(num, x, y);
+                                this.cells[x][y].setNumber(num);
                                 validateImToNumber(num, x, y);
                             }
                         }
@@ -249,7 +224,7 @@ public class Sudoku {
     }
 
     //TODO
-    public void solve(){
+    public void solve() throws NotInImageNumbers {
         this.fillImNumbers();
         while (this.onlyImToNumber());
     }

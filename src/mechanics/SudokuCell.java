@@ -3,23 +3,25 @@ package mechanics;
 import mechanics.errors.NotInImageNumbers;
 import mechanics.utils.Parameters;
 
+import static java.lang.Math.sqrt;
+
 public class SudokuCell {
 
     private int number;
     private boolean[] imNumbers;
 
     //Parameters of position of cell in playing field
-    private int posX;
-    private int posY;
-    private int square;
+    private final int posX;
+    private final int posY;
+    private final int square;
 
     //Constructor for cell from playing field
-    public SudokuCell(int number, int SudokuSize, int posX, int posY, int square) {
+    public SudokuCell(int number, int fieldSize, int posX, int posY) {
         this.number = number;
-        this.imNumbers = new boolean[SudokuSize];
+        this.imNumbers = new boolean[fieldSize];
         this.posX = posX;
         this.posY = posY;
-        this.square = square;
+        this.square = setSquare(fieldSize, posX, posY);
     }
 
     //Constructor for cell without position
@@ -33,7 +35,7 @@ public class SudokuCell {
     //Constructor for cell without position in default sudoku (9x9)
     public SudokuCell(int number) {
         this.number = number;
-        this.imNumbers = new boolean[Parameters.DEFAULT_VALUE];
+        this.imNumbers = new boolean[Parameters.DEFAULT_SIZE_VALUE];
 
         this.posX = this.posY = this.square = Parameters.MISSING_VALUE;
     }
@@ -50,8 +52,8 @@ public class SudokuCell {
 
         this.number = number;
         
-        for(int i = 0; i < imNumbers.length; i++)
-            this.imNumbers[i] = false;
+        for(int imNumber = 0; imNumber < imNumbers.length; imNumber++)
+            this.imNumbers[imNumber] = false;
     }
 
 
@@ -83,7 +85,7 @@ public class SudokuCell {
     }
 
 
-    //Getters of cell positions
+    //Getters and setter of cell positions
     public int getSquare() {
         return square;
     }
@@ -96,12 +98,22 @@ public class SudokuCell {
         return posY;
     }
 
+    public int setSquare(int fieldSize, int posX, int posY) {
+        int countRowsColumns = (int)sqrt(fieldSize);
+
+        int squareX = (posX + 1) / countRowsColumns;
+        int squareY = (posY + 1) / countRowsColumns;
+
+        return squareX + squareY * countRowsColumns;
+    }
 
     //View of cell's image numbers
-    public String showImNumber() {
+    public String ImNumbersToString() {
         StringBuilder imNumbers = new StringBuilder();
-        for (int i = 0; i < imNumbers.length(); i++)
-            imNumbers.append(this.imNumbers[i]).append(' ');
+
+        for (int imNumber = 0; imNumber < imNumbers.length(); imNumber++)
+            imNumbers.append(this.imNumbers[imNumber]).append(' ');
+
         return imNumbers.toString();
     }
 
