@@ -1,19 +1,25 @@
 package mechanics;
 
+import mechanics.errors.NonFormatValue;
 import mechanics.errors.NotInImageNumbers;
+import mechanics.errors.NumberAlreadyExist;
 import mechanics.utils.Utils;
 
 public class Sudoku {
 
     private int size = 9;
-    private SudokuCell[][] cells = new SudokuCell[size][size];
+    private CellOnField[][] cells = new CellOnField[size][size];
 
     public Sudoku(int size) {
         int squareY = 0;
         for (int y = 0; y < 9; y++) {
             int squareX = 0;
             for (int x = 0; x < 9; x++) {
-                this.cells[x][y] = new SudokuCell( 0, squareX + squareY*3);
+                try {
+                    this.cells[x][y] = new CellOnField( 0, squareX + squareY*3, x, y);
+                } catch (NonFormatValue e) {
+                    e.printStackTrace();
+                }
                 if (x == 2 || x == 5)
                     squareX++;
             }
@@ -40,12 +46,12 @@ public class Sudoku {
         for (int y = 0; y < 9; y++)
             for (int x = 0; x < 9; x++)
                 if (cells[x][y].getNumber() == 0 && cells[x][y].countOfImNumbers() != 0)
-                    result += cells[x][y].ImNumbersToString() + "imaginary num at ( " + (x+1) + "; " + (y+1) + " )" + '\n';
+                    result += cells[x][y].imNumbersToString() + "imaginary num at ( " + (x+1) + "; " + (y+1) + " )" + '\n';
         return result;
     }
 
     public String showImNumbers(int posX, int posY){
-        return cells[posX][posY].ImNumbersToString() + "imaginary num at ( " + (posX+1) + "; " + (posY+1) + " )";
+        return cells[posX][posY].imNumbersToString() + "imaginary num at ( " + (posX+1) + "; " + (posY+1) + " )";
     }
 
     private void fillImNumbers() {
@@ -61,8 +67,13 @@ public class Sudoku {
                                             ((y == secondY) || (x == secondX) ||
                                                     (cells[x][y].getSquare() == cells[secondX][secondY].getSquare())))
                                         isPrint = false;
-                        if (isPrint)
-                            cells[x][y].setImNumber(number);
+                        if (isPrint) {
+                            try {
+                                cells[x][y].setImNumber(number);
+                            } catch (NumberAlreadyExist e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
     }
 

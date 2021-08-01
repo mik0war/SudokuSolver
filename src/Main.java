@@ -1,5 +1,3 @@
-import mechanics.SudokuCell;
-import mechanics.errors.NotInImageNumbers;
 import mechanics.utils.Utils;
 
 public class Main {

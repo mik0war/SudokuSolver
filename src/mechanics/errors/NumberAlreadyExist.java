@@ -2,9 +2,9 @@ package mechanics.errors;
 
 import mechanics.utils.Strings;
 
-public class NotInImageNumbers extends Exception{
+public class NumberAlreadyExist extends Exception {
     @Override
     public String toString() {
-        return Strings.NOT_IN_IMAGE;
+        return Strings.NUMBER_EXIST;
     }
 }
