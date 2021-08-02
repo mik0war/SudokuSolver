@@ -4,6 +4,7 @@ import mechanics.Cell;
 import mechanics.errors.NotInImageNumbers;
 import mechanics.errors.NumberAlreadyExist;
 import mechanics.utils.Strings;
+import mechanics.utils.Utils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,8 +31,8 @@ class CellTest {
         try {
             cell.setImNumber(4);
             cell.setNumber(4);
-        } catch (NotInImageNumbers | NumberAlreadyExist e) {
-            e.printStackTrace();
+        } catch (NotInImageNumbers | NumberAlreadyExist error) {
+            Utils.logMessage(error.toString());
         }
 
         assertEquals(4, cell.getNumber());
@@ -55,8 +56,8 @@ class CellTest {
         Cell cell = new Cell(0);
         try {
             cell.setImNumber(5);
-        } catch (NumberAlreadyExist e) {
-            e.printStackTrace();
+        } catch (NumberAlreadyExist error) {
+            Utils.logMessage(error.toString());
         }
 
         assertTrue(cell.getImNumber(5));
@@ -85,8 +86,8 @@ class CellTest {
 
             cell.removeImNumber(1);
             assertEquals(3, cell.countOfImNumbers());
-        } catch (NumberAlreadyExist e){
-            e.printStackTrace();
+        } catch (NumberAlreadyExist error){
+            Utils.logMessage(error.toString());
         }
     }
 }

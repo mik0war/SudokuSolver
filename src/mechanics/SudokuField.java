@@ -1,6 +1,8 @@
 package mechanics;
 
 import mechanics.errors.NonFormatValue;
+import mechanics.errors.NotInImageNumbers;
+import mechanics.errors.NumberAlreadyExist;
 import mechanics.utils.Strings;
 import mechanics.utils.Utils;
 
@@ -8,7 +10,7 @@ import static java.lang.Math.sqrt;
 
 public class SudokuField {
 
-    private final int fieldSize;
+    protected final int fieldSize;
     protected CellOnField[] cells;
 
     public SudokuField(int size, int[] ... numbersArray)
@@ -52,4 +54,53 @@ public class SudokuField {
             }
     }
 
+    private int getPosition (int posX, int posY){
+        return posX + posY * (int)sqrt(fieldSize);
+    }
+
+    public void setNumberAtCell(int number, int posX, int posY){
+        try {
+            cells[getPosition(posX, posY)].setNumber(number);
+        } catch (NotInImageNumbers error) {
+            Utils.logMessage(error.toString());
+        }
+    }
+
+    public void setNumberAtCellForce(int number, int posX, int posY){
+        int position = getPosition(posX, posY);
+
+        try {
+            if (!cells[position].getImNumber(number))
+                cells[position].setImNumber(number);
+        } catch (NumberAlreadyExist error) {
+            Utils.logMessage(error.toString());
+        }
+
+        try {
+            cells[position].setNumber(number);
+        } catch (NotInImageNumbers error) {
+            Utils.logMessage(error.toString());
+        }
+    }
+
+    public void setImNumberAtCell(int number, int posX, int posY){
+        try {
+            cells[getPosition(posX, posY)].setImNumber(number);
+        } catch (NumberAlreadyExist error) {
+            Utils.logMessage(error.toString());
+        }
+    }
+
+    public int getNumberFromCell(int posX, int posY){
+        return cells[getPosition(posX, posY)].getNumber();
+    }
+
+    public boolean getImNumberFromCell(int number, int posX, int posY){
+        return cells[getPosition(posX, posY)].getImNumber(number);
+    }
+
+    public boolean[] getImNumbersFromCell(int posX, int posY){
+        return cells[getPosition(posX, posY)].getImNumbers();
+    }
 }
+
